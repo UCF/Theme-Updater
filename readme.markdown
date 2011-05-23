@@ -1,4 +1,4 @@
-# Theme Updater plugin for GitHub hosted Wordpress themes
+# Wordpress plugin: a theme updater for GitHub hosted Wordpress themes
 
 ## Installation & Use
 
