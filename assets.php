@@ -26,11 +26,11 @@ function github_theme_update_row( $theme_key, $theme ) {
 	if( isset($r['error']) ){
 		printf('Error with Github Theme Updater: <span style="color:#BC0B0B">%1$s</span>', $r['error']);
 	} else if ( ! current_user_can('update_themes') )
-		printf( __('From GitHub, there is a new version of %1$s available. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r->new_version );
+		printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r->new_version );
 	else if ( empty( $r['package'] ) )
-		printf( __('From GitHub, there is a new version of %1$s available. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>. <em>Automatic update is unavailable for this plugin.</em>'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'] );
+		printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>. <em>Automatic update is unavailable for this plugin.</em>'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'] );
 	else
-		printf( __('From GitHub, there is a new version of %1$s available. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a> or <a href="%5$s">update automatically</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'], wp_nonce_url( self_admin_url('update.php?action=upgrade-github-theme&theme=') . $theme_key, 'upgrade-theme_' . $theme_key) );
+		printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a> or <a href="%5$s">update automatically</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'], wp_nonce_url( self_admin_url('update.php?action=upgrade-github-theme&theme=') . $theme_key, 'upgrade-theme_' . $theme_key) );
 	do_action( "in_theme_update_message-$theme_key", $theme, $r );
 	echo '</div></td></tr>';
 }
