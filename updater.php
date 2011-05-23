@@ -4,8 +4,10 @@ Plugin Name: Theme Updater
 Plugin URI: http://webcom.dev.smca.ucf.edu/
 Description: A theme updater for GitHub hosted Wordpress themes.  This Wordpress plugin automatically checks GitHub for theme updates and enables automatic install.  For more information read <a href="https://github.com/UCF/Theme-Updater/blob/master/readme.markdown">plugin documentation</a>.
 Author: Douglas Beck
-Version: 0.1
+Author: UCF Web Communications
+Version: 1.0
 */
+
 require_once('assets.php');
 
 add_filter('site_transient_update_themes', 'transient_update_themes_filter');
