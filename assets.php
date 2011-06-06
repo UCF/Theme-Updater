@@ -24,7 +24,24 @@ function github_theme_update_row( $theme_key, $theme ) {
 		printf('Error with Github Theme Updater. %1$s', $r['error']);
 	} else if(isset($r['up-to-date'])){
 		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-ok">';
-		printf('Theme is up-to-date!  <a href="#">Rollback you say?</a>');
+		echo 'Theme is up-to-date! ';
+		if (current_user_can('update_themes') ){
+			if(count($r['rollback']) > 0){
+				echo "Rollback to: ";
+				// display last three tags
+				for($i=0; $i<3 ; $i++){
+					$tag = array_pop($r['rollback']);
+					if(empty($tag)) break;
+					if($i>0) echo ", ";
+					printf('<a href="%s%s">%s</a>',
+						wp_nonce_url( self_admin_url('update.php?action=upgrade-github-theme&theme=') . $theme_key, 'upgrade-theme_' . $theme_key),
+						'&rollback=' . urlencode($tag),
+						$tag);
+				}
+			} else {
+				echo "No previous tags to rollback to.";
+			}
+		}
 	} else {
 		// modified wp
 		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu">';

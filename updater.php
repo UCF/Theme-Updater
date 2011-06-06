@@ -72,27 +72,27 @@ function transient_update_themes_filter($data){
 		// Sort and get latest tag
 		$tags = array_keys(get_object_vars($response->tags));
 		usort($tags, "version_compare");
-		$newest_tag = array_pop($tags);
+		
+		
+		// check for rollback
+		if(isset($_GET['rollback'])){
+			$data->response[$theme_key]['package'] = $theme['UpdateURI'] . '/zipball/' . urlencode($_GET['rollback']);
+			continue;
+		}
 		
 		
 		// check and generate download link
+		$newest_tag = array_pop($tags);
 		if(version_compare($theme['Version'],  $newest_tag, '>=')){
 			// up-to-date!
 			$data->response[$theme_key]['up-to-date'] = true;
-			
-			// give option to rollback to previous two tags
-			$rollback = array();
-			for($i=0; $i<2; $i++){
-				$tag = array_pop($tags);
-				if($tag) $rollback[$tag] = $theme['UpdateURI'] . '/zipball/' . $tag;
-			}
-			$data->response[$theme_key]['rollback'] = $rollback;
+			$data->response[$theme_key]['rollback'] = $tags;
 			continue;
 		}
-		$download_link = $theme['UpdateURI'] . '/zipball/' . $newest_tag;
 		
 		
 		// new update available, add to $data
+		$download_link = $theme['UpdateURI'] . '/zipball/' . $newest_tag;
 		$update = array();
 		$update['new_version'] = $newest_tag;
 		$update['url']         = $theme['UpdateURI'];

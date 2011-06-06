@@ -2,7 +2,7 @@
 
 ## Installation & Use
 
-[Here](https://github.com/beck/Theme-Updater-Demo) is a sample theme.  [Download (.zip)](https://github.com/beck/Theme-Updater-Demo/zipball/v1.1.0)
+[Here](https://github.com/UCF/Theme-Updater-Demo) is a sample theme.  [Download (.zip)](https://github.com/UCF/Theme-Updater-Demo/zipball/v1.1.0)
 
 ### 1- Publish Theme to a public GitHub Repository
 
