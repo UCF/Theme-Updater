@@ -27,7 +27,7 @@ function github_theme_update_row( $theme_key, $theme ) {
 		echo 'Theme is up-to-date! ';
 		if (current_user_can('update_themes') ){
 			if(count($r['rollback']) > 0){
-				echo "Rollback to: ";
+				echo "<strong>Rollback to:</strong> ";
 				// display last three tags
 				for($i=0; $i<3 ; $i++){
 					$tag = array_pop($r['rollback']);
