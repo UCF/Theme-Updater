@@ -52,7 +52,15 @@ function transient_update_themes_filter($data){
 		}
 		$response = json_decode($raw_response['body']);
 		if(isset($response->error)){
-			$data->response[$theme_key]['error'] = sprintf('While <a href="%s" style="color:#BC0B0B;text-decoration:underline;">fetching tags</a> api error</a> "%s"', $url, $response->error);
+			if(is_array($response->error)){
+				$errors = '';
+				foreach ( $response->error as $error) {
+					$errors .= ' ' . $error;
+				}
+			} else {
+				$errors = print_r($response->error, true);
+			}
+			$data->response[$theme_key]['error'] = sprintf('While <a href="%s" style="color:#BC0B0B;text-decoration:underline;">fetching tags</a> api error</a>: %s', $url, $errors);
 			continue;
 		}
 		if(!isset($response->tags) or count(get_object_vars($response->tags)) < 1){
