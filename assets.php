@@ -153,11 +153,13 @@ class Github_Theme_Upgrader extends Theme_Upgrader {
 			$remote_destination = trailingslashit($remote_destination) . trailingslashit(basename($source));
 			$destination = trailingslashit($destination) . trailingslashit(basename($source));
 		}
-
+		
+		$tempdir = untrailingslashit($remote_destination) . ".tmp-" . time() . "/"; 
 		if ( $wp_filesystem->exists($remote_destination) ) {
 			if ( $clear_destination ) {
-				//Try to rename original theme (also works as a backup)
-				$moved = @rename($remote_destination, untrailingslashit($remote_destination) . ".tmp/");
+				
+				//Try to rename original theme (also works as a backup) 
+				$moved = @rename($remote_destination, $tempdir);
 				if ( ! $moved )
 					return new WP_Error('remove_old_failed', $this->strings['remove_old_failed']);
 				
@@ -210,8 +212,9 @@ class Github_Theme_Upgrader extends Theme_Upgrader {
 			return $res;
 		}
 		
-		// Remove reanmed backup
-		$wp_filesystem->delete(untrailingslashit($remote_destination) . ".tmp/", true);
+		// Remove temporary backup 
+		$removed = $wp_filesystem->delete($tempdir, true); 
+		if( !$removed ) $this->skin->feedback("Could not remove the temporary theme directory.");
 		
 		//Bombard the calling function will all the info which we've just used.
 		return $this->result;
