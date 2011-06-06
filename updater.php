@@ -60,7 +60,7 @@ function transient_update_themes_filter($data){
 			} else {
 				$errors = print_r($response->error, true);
 			}
-			$data->response[$theme_key]['error'] = sprintf('While <a href="%s" style="color:#BC0B0B;text-decoration:underline;">fetching tags</a> api error</a>: %s', $url, $errors);
+			$data->response[$theme_key]['error'] = sprintf('While <a href="%s">fetching tags</a> api error</a>: <span class="error">%s</span>', $url, $errors);
 			continue;
 		}
 		if(!isset($response->tags) or count(get_object_vars($response->tags)) < 1){
@@ -78,6 +78,15 @@ function transient_update_themes_filter($data){
 		// check and generate download link
 		if(version_compare($theme['Version'],  $newest_tag, '>=')){
 			// up-to-date!
+			$data->response[$theme_key]['up-to-date'] = true;
+			
+			// give option to rollback to previous two tags
+			$rollback = array();
+			for($i=0; $i<2; $i++){
+				$tag = array_pop($tags);
+				if($tag) $rollback[$tag] = $theme['UpdateURI'] . '/zipball/' . $tag;
+			}
+			$data->response[$theme_key]['rollback'] = $rollback;
 			continue;
 		}
 		$download_link = $theme['UpdateURI'] . '/zipball/' . $newest_tag;

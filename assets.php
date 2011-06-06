@@ -17,15 +17,24 @@ function github_theme_update_row( $theme_key, $theme ) {
 	$details_url = $r['url'];
 	$wp_list_table = _get_list_table('WP_MS_Themes_List_Table');
 	
-	echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message">';
+	
+	// custom additions
 	if( isset($r['error']) ){
-		printf('Error with Github Theme Updater: <span class=".gtu-error">%1$s</span>', $r['error']);
-	} else if ( ! current_user_can('update_themes') )
-		printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r->new_version );
-	else if ( empty( $r['package'] ) )
-		printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>. <em>Automatic update is unavailable for this plugin.</em>'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'] );
-	else
-		printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a> or <a href="%5$s">update automatically</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'], wp_nonce_url( self_admin_url('update.php?action=upgrade-github-theme&theme=') . $theme_key, 'upgrade-theme_' . $theme_key) );
+		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-error">';
+		printf('Error with Github Theme Updater. %1$s', $r['error']);
+	} else if(isset($r['up-to-date'])){
+		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-ok">';
+		printf('Theme is up-to-date!  <a href="#">Rollback you say?</a>');
+	} else {
+		// modified wp
+		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message">';
+		if ( ! current_user_can('update_themes') )
+			printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r->new_version );
+		else if ( empty( $r['package'] ) )
+			printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>. <em>Automatic update is unavailable for this plugin.</em>'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'] );
+		else
+			printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a> or <a href="%5$s">update automatically</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r['new_version'], wp_nonce_url( self_admin_url('update.php?action=upgrade-github-theme&theme=') . $theme_key, 'upgrade-theme_' . $theme_key) );
+	}
 	do_action( "in_theme_update_message-$theme_key", $theme, $r );
 	echo '</div></td></tr>';
 }
