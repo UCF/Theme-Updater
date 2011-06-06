@@ -9,6 +9,11 @@
 	-khtml-border-radius:5px;
 	-webkit-border-radius:5px;
 	border-radius:5px;
+	
+	background:#fffbe4;
+	background:-moz-linear-gradient(bottom,  #FFEFDC,  #FFFCEC);
+	background:-webkit-gradient(linear, left bottom, left top, from(#fffbe4), to(#fffbe4));
+	border-color:#D7CBBB;
 }
 	
 .plugin-update-tr .update-error {
@@ -32,9 +37,9 @@
 .plugin-update-tr .update-ok {
 	font-weight:normal;
 	border-color:#B0C5B3;
-	background: #cfdfd1;
-	background:-moz-linear-gradient(bottom,  #cfdfd1,  #effff1);
-	background:-webkit-gradient(linear, left bottom, left top, from(#cfdfd1), to(#effff1));
+	background: #CBD8CC;
+	background:-moz-linear-gradient(bottom,  #CBD6CC,  #F5FFF6);
+	background:-webkit-gradient(linear, left bottom, left top, from(#CBD6CC), to(#F5FFF6));
 }
 
 .plugin-update-tr .update-ok a {
