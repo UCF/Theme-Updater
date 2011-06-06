@@ -12,7 +12,7 @@
 	
 	background:#fffbe4;
 	background:-moz-linear-gradient(bottom,  #FFEFDC,  #FFFCEC);
-	background:-webkit-gradient(linear, left bottom, left top, from(#fffbe4), to(#fffbe4));
+	background:-webkit-gradient(linear, left bottom, left top, from(#FFEFDC), to(#FFFCEC));
 	border-color:#D7CBBB;
 }
 	
