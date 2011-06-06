@@ -1,17 +1,12 @@
 <?php
-/******************************************************************************\
-	Most of this code is pulled directly from the WP source
-	modifications are noted.
-\******************************************************************************/
 
+/******************************************************************************\
+	http://core.trac.wordpress.org/browser/trunk/wp-admin/includes/update.php?rev=17984#L264
+	changes:  
+		- disables the iframe popup and uses a new window and makes a pop-up linking to the github project
+		- calls 'upgrade-github-theme' vs 'upgrade-theme'
+\******************************************************************************/
 function github_theme_update_row( $theme_key, $theme ) {
-	/*
-		http://core.trac.wordpress.org/browser/trunk/wp-admin/includes/update.php?rev=17984#L264
-		changes:  
-			- disables the iframe popup and uses a new window and makes a pop-up linking to the github project
-			- calls 'upgrade-github-theme' vs 'upgrade-theme'
-	*/  
-	
 	$current = get_site_transient( 'update_themes' );
 	if ( !isset( $current->response[ $theme_key ] ) )
 		return false;
@@ -24,7 +19,7 @@ function github_theme_update_row( $theme_key, $theme ) {
 	
 	echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message">';
 	if( isset($r['error']) ){
-		printf('Error with Github Theme Updater: <span style="color:#BC0B0B">%1$s</span>', $r['error']);
+		printf('Error with Github Theme Updater: <span class=".gtu-error">%1$s</span>', $r['error']);
 	} else if ( ! current_user_can('update_themes') )
 		printf( __('From GitHub, there is a new version of %1$s. <a href="%2$s" target="blank" title="%3$s">View version %4$s details</a>.'), $theme['Name'], esc_url($details_url), esc_attr($theme['Name']), $r->new_version );
 	else if ( empty( $r['package'] ) )
@@ -35,7 +30,20 @@ function github_theme_update_row( $theme_key, $theme ) {
 	echo '</div></td></tr>';
 }
 
+// http://codex.wordpress.org/Function_Reference/wp_enqueue_style
+add_action( 'admin_init', 'theme_upgrader_stylesheet' );
+function theme_upgrader_stylesheet() {
+	$style_url  = WP_PLUGIN_URL . '/' . basename(dirname(__FILE__)) . '/admin-style.css';
+	wp_register_style('theme_updater_style', $style_url);
+	wp_enqueue_style( 'theme_updater_style');
+}
 
+
+
+/******************************************************************************\
+	Most of this code is pulled directly from the WP source
+	modifications are noted.
+\******************************************************************************/
 include ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 class Github_Theme_Upgrader extends Theme_Upgrader {
 	function download_url( $url ) {
