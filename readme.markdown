@@ -1,9 +1,9 @@
 # Wordpress plugin: a theme updater for GitHub hosted Wordpress themes
 
 ## Screenshots
-![Screenshot One](screenshot-1.png)  
-![Screenshot Two](screenshot-2.png)  
-![Screenshot Three](screenshot-3.png)  
+![Screenshot One](https://github.com/UCF/Theme-Updater/blob/master/screenshot-1.png)  
+![Screenshot Two](https://github.com/UCF/Theme-Updater/blob/master/screenshot-2.png)  
+![Screenshot Three](https://github.com/UCF/Theme-Updater/blob/master/screenshot-3.png)  
 
 ## Installation & Use
 
