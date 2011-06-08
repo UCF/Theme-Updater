@@ -8,7 +8,10 @@
 \******************************************************************************/
 function github_theme_update_row( $theme_key, $theme ) {
 	$current = get_site_transient( 'update_themes' );
-	if ( !isset( $current->response[ $theme_key ] ) )
+	if ( 
+		!isset( $current->response[ $theme_key ] ) and
+		!isset( $current->up_to_date[ $theme_key ] )	
+	)
 		return false;
 		
 	$r = $current->response[ $theme_key ];
@@ -19,15 +22,16 @@ function github_theme_update_row( $theme_key, $theme ) {
 	if( isset($r['error']) ){
 		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-error">';
 		printf('Error with Github Theme Updater. %1$s', $r['error']);
-	} else if(isset($r['up-to-date'])){
+	} else if(isset($current->up_to_date[$theme_key])){
+		$rollback = $current->up_to_date[$theme_key]['rollback'];
 		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-ok">';
 		echo 'Theme is up-to-date! ';
 		if (current_user_can('update_themes') ){
-			if(count($r['rollback']) > 0){
+			if(count($rollback) > 0){
 				echo "<strong>Rollback to:</strong> ";
 				// display last three tags
 				for($i=0; $i<3 ; $i++){
-					$tag = array_pop($r['rollback']);
+					$tag = array_pop($rollback);
 					if(empty($tag)) break;
 					if($i>0) echo ", ";
 					printf('<a href="%s%s">%s</a>',
