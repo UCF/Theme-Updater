@@ -1,5 +1,10 @@
 # Wordpress plugin: a theme updater for GitHub hosted Wordpress themes
 
+## Screenshots
+![Screenshot One](screenshot-1.png)  
+![Screenshot Two](screenshot-2.png)  
+![Screenshot Three](screenshot-3.png)  
+
 ## Installation & Use
 
 [Here](https://github.com/UCF/Theme-Updater-Demo) is a sample theme.  [Download (.zip)](https://github.com/UCF/Theme-Updater-Demo/zipball/v1.1.0)
