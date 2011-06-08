@@ -45,29 +45,36 @@ function transient_update_themes_filter($data){
 		$url = 'https://github.com/api/v2/json/repos/show/' . 
 				$matches['username'] . '/' . $matches['repo'] .
 				'/tags';
-		$raw_response = wp_remote_get($url, array('sslverify' => false, 'timeout' => 10));
-		if ( is_wp_error( $raw_response ) ){
-			$data->response[$theme_key]['error'] = "Error response from " . $url;
-			continue;
-		}
-		$response = json_decode($raw_response['body']);
-		if(isset($response->error)){
-			if(is_array($response->error)){
-				$errors = '';
-				foreach ( $response->error as $error) {
-					$errors .= ' ' . $error;
-				}
-			} else {
-				$errors = print_r($response->error, true);
-			}
-			$data->response[$theme_key]['error'] = sprintf('While <a href="%s">fetching tags</a> api error</a>: <span class="error">%s</span>', $url, $errors);
-			continue;
-		}
-		if(!isset($response->tags) or count(get_object_vars($response->tags)) < 1){
-			$data->response[$theme_key]['error'] = "Github theme does not have any tags";
-			continue;
-		}
 		
+		$response = get_transient(md5($url)); // Note: WP transients fail if key is long than 45 characters
+		if(empty($response)){
+			$raw_response = wp_remote_get($url, array('sslverify' => false, 'timeout' => 10));
+			if ( is_wp_error( $raw_response ) ){
+				$data->response[$theme_key]['error'] = "Error response from " . $url;
+				continue;
+			}
+			$response = json_decode($raw_response['body']);
+			if(isset($response->error)){
+				if(is_array($response->error)){
+					$errors = '';
+					foreach ( $response->error as $error) {
+						$errors .= ' ' . $error;
+					}
+				} else {
+					$errors = print_r($response->error, true);
+				}
+				$data->response[$theme_key]['error'] = sprintf('While <a href="%s">fetching tags</a> api error</a>: <span class="error">%s</span>', $url, $errors);
+				continue;
+			}
+			
+			if(!isset($response->tags) or count(get_object_vars($response->tags)) < 1){
+				$data->response[$theme_key]['error'] = "Github theme does not have any tags";
+				continue;
+			}
+			
+			//set cache, just 60 seconds
+			set_transient(md5($url), $response, 30);
+		}
 		
 		// Sort and get latest tag
 		$tags = array_keys(get_object_vars($response->tags));
