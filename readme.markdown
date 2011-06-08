@@ -3,8 +3,15 @@
 ## Screenshots
 
 ![Screenshot One](https://github.com/UCF/Theme-Updater/raw/master/screenshot-1.png)  
+
+---
+
 ![Screenshot Two](https://github.com/UCF/Theme-Updater/raw/master/screenshot-2.png)  
+
+---
+
 ![Screenshot Three](https://github.com/UCF/Theme-Updater/raw/master/screenshot-3.png)  
+
 
 ## Installation & Use
 
