@@ -1,9 +1,9 @@
 === Theme Updater ===
 Contributors: blurback
 Tags: github, theme, upgrader, updater
-Requires at least: v1.3.2
-Tested up to: trunk
-Stable tag: v1.3.2
+Requires at least: 3.1.2
+Tested up to: 3.1.3
+Stable tag: 1.3.3
 
 A theme updater for GitHub hosted WordPress themes
 
