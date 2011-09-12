@@ -149,99 +149,122 @@ class Github_Theme_Upgrader extends Theme_Upgrader {
 		*/
 		
 		global $wp_filesystem;
-		$defaults = array( 'source' => '', 'destination' => '', //Please always pass these
-						'clear_destination' => false, 'clear_working' => false,
-						'hook_extra' => array());
-
+		$defaults = array(
+			'source' => '', // Something like .../wp-content/update/v1.tmp/...
+			'destination' => '', // Something like .../wp-content/themes/...
+			'clear_destination' => false,
+			'clear_working' => false,
+			'hook_extra' => array());
+		
 		$args = wp_parse_args($args, $defaults);
 		extract($args);
 
 		@set_time_limit( 300 );
 
-		if ( empty($source) || empty($destination) )
+		if(empty($source) || empty($destination)) {
 			return new WP_Error('bad_request', $this->strings['bad_request']);
-
-		$this->skin->feedback('installing_package');
-
-		$res = apply_filters('upgrader_pre_install', true, $hook_extra);
-		if ( is_wp_error($res) )
-			return $res;
-
-		//Retain the Original source and destinations
-		$remote_source = $source;
-		$local_destination = $destination;
-
-		$source_files = array_keys( $wp_filesystem->dirlist($remote_source) );
-		$remote_destination = $wp_filesystem->find_folder($local_destination);
-
-		//Locate which directory to copy to the new folder, This is based on the actual folder holding the files.
-		if ( 1 == count($source_files) && $wp_filesystem->is_dir( trailingslashit($source) . $source_files[0] . '/') ) //Only one folder? Then we want its contents.
-			$source = trailingslashit($source) . trailingslashit($source_files[0]);
-		elseif ( count($source_files) == 0 )
-			return new WP_Error('bad_package', $this->strings['bad_package']); //There are no files?
-		//else //Its only a single file, The upgrader will use the foldername of this file as the destination folder. foldername is based on zip filename.
-
-		//Hook ability to change the source file location..
-		$source = apply_filters('upgrader_source_selection', $source, $remote_source, $this);
-		if ( is_wp_error($source) )
-			return $source;
-
-		//Has the source location changed? If so, we need a new source_files list.
-		if ( $source !== $remote_source )
-			$source_files = array_keys( $wp_filesystem->dirlist($source) );
-
-		//Protection against deleting files in any important base directories.
-		if ( in_array( $destination, array(ABSPATH, WP_CONTENT_DIR, WP_PLUGIN_DIR, WP_CONTENT_DIR . '/themes') ) ) {
-			$remote_destination = trailingslashit($remote_destination) . trailingslashit(basename($source));
-			$destination = trailingslashit($destination) . trailingslashit(basename($source));
 		}
 		
-		$tempdir = untrailingslashit($remote_destination) . ".tmp-" . time() . "/"; 
-		if ( $wp_filesystem->exists($remote_destination) ) {
-			if ( $clear_destination ) {
-				
-				//Try to rename original theme (also works as a backup) 
-				$moved = @rename($remote_destination, $tempdir);
-				if ( ! $moved )
-					return new WP_Error('remove_old_failed', $this->strings['remove_old_failed']);
-				
-				//We're going to clear the destination if theres something there
-				$this->skin->feedback('remove_old');
-				$removed = $wp_filesystem->delete($remote_destination, true);
-				$removed = apply_filters('upgrader_clear_destination', $removed, $local_destination, $remote_destination, $hook_extra);
+		$this->skin->feedback('installing_package');
 
-				if ( is_wp_error($removed) )
-					return $removed;
-				else if ( ! $removed )
-					return new WP_Error('remove_old_failed', $this->strings['remove_old_failed']);
-			} else {
-				//If we're not clearing the destination folder and something exists there allready, Bail.
-				//But first check to see if there are actually any files in the folder.
-				$_files = $wp_filesystem->dirlist($remote_destination);
-				if ( ! empty($_files) ) {
-					$wp_filesystem->delete($remote_source, true); //Clear out the source files.
-					return new WP_Error('folder_exists', $this->strings['folder_exists'], $remote_destination );
+		$filter_result = apply_filters('upgrader_pre_install', true, $hook_extra);
+		if ( is_wp_error($filter_result) ) {
+			return $filter_result;
+		}
+		
+		//Retain the Original source and destinations
+		$original_source      = $source;
+		$original_destination = $destination;
+
+		$source_files       = array_keys( $wp_filesystem->dirlist($source) );
+		$remote_destination = $wp_filesystem->find_folder($destination);
+		
+		# Resolve the real location of the source directory
+		// If the only item in source_files is a folder, that is the real source
+		if(count($source_files) == 1 && $wp_filesystem->is_dir(trailingslashit($source).$source_files[0].'/')) {
+			$source = trailingslashit($source).trailingslashit($source_files[0]);
+		} 
+		// Hook to allow further modification of the source directory path
+		$source = apply_filters('upgrader_source_selection', $source, $remote_source, $this);
+		if ( is_wp_error($source) ) {
+			return $source;
+		}
+		##
+		
+		//Has the source location changed? If so, we need a new source_files list.
+		if($source !== $original_source) {
+			$source_files = array_keys( $wp_filesystem->dirlist($source) );
+		}
+		
+		// No files in the theme
+		if(count($source_files) == 0) {
+			return new WP_Error('bad_package', $this->strings['bad_package']);
+		}
+		
+		//Protection against deleting files in any important base directories.
+		if(in_array( $destination, array(ABSPATH, WP_CONTENT_DIR, WP_PLUGIN_DIR, WP_CONTENT_DIR . '/themes') ) ) {
+			$remote_destination = trailingslashit($remote_destination).trailingslashit(basename($source));
+			$destination        = trailingslashit($destination).trailingslashit(basename($source));
+		}
+		
+		// Flattens a hierarchical file tree. Also adds a `hash` key to the
+		// file details containing the md5 hash of the files contents.
+		function flatten_filetree($tree, $base_path, $parents = Array()) {
+			$flattened_tree = Array();
+			foreach($tree as $branch_name => $branch_details) {
+				$true_branch_name = count($parents) > 0 ? implode('/', $parents).'/'.$branch_name : $branch_name;
+				if($branch_details['type'] == 'f') {
+					$branch_details['hash'] = hash_file('md5', $base_path.$true_branch_name);
+					$flattened_tree[$true_branch_name] = $branch_details;
+				} else if($branch_details['type'] == 'd') {
+					array_push($parents, $branch_name);
+					$flattened_tree = array_merge($flattened_tree, flatten_filetree($branch_details['files'], $base_path, $parents));
+					array_pop($parents);
+				}
+			}
+			return $flattened_tree;
+		}
+		
+		if($wp_filesystem->exists($remote_destination)) { 
+			$old_files = $wp_filesystem->dirlist($remote_destination, true, true);
+			$new_files = $wp_filesystem->dirlist($source, true, true);
+			$old_files_flat = flatten_filetree($old_files, $remote_destination);
+			$new_files_flat = flatten_filetree($new_files, $source);
+			
+			$changed_files = Array();
+			
+			foreach($new_files_flat as $name => $details) {
+				if(!isset($old_files_flat[$name]) || $old_files_flat[$name]['hash'] != $details['hash']) {
+					$changed_files[$name] = $details;
+				}
+			}
+			foreach($changed_files as $name => $details) {
+				$old_file_path = $remote_destination.$name;
+				$new_file_path = $source.$name;
+				if(($old_file = fopen($old_file_path, 'w+')) === False) {
+					wp_die('Unable to open '.$old_file_path);
+				} else if(($new_file = fopen($new_file_path, 'r')) === False) {
+					wp_die('Unable to open '.$new_file_path);
+				} else {
+					if(!flock($old_file, LOCK_EX)) {
+						wp_die(__('Unable to lock '.$old_file_path));
+					} else {
+						while(($buffer = fgets($new_file, 4096)) !== False) {
+							fputs($old_file, $buffer);
+						}
+						if(!flock($old_file, LOCK_UN)) {
+							wp_die(__('Unable to unlock '.$new_file_path));
+						}
+					}
+					fclose($old_file);
+					fclose($new_file);
 				}
 			}
 		}
-
-		//Create destination if needed
-		if ( !$wp_filesystem->exists($remote_destination) )
-			if ( !$wp_filesystem->mkdir($remote_destination, FS_CHMOD_DIR) )
-				return new WP_Error('mkdir_failed', $this->strings['mkdir_failed'], $remote_destination);
-
-		// Copy new version of item into place.
-		$result = copy_dir($source, $remote_destination);
-		if ( is_wp_error($result) ) {
-			if ( $clear_working )
-				$wp_filesystem->delete($remote_source, true);
-			return $result;
+		if($clear_working) {
+			$wp_filesystem->delete($source, true);
 		}
-
-		//Clear the Working folder?
-		if ( $clear_working )
-			$wp_filesystem->delete($remote_source, true);
-
+		
 		$destination_name = basename( str_replace($local_destination, '', $destination) );
 		if ( '.' == $destination_name )
 			$destination_name = '';
@@ -253,12 +276,6 @@ class Github_Theme_Upgrader extends Theme_Upgrader {
 			$this->result = $res;
 			return $res;
 		}
-		
-		// Remove temporary backup 
-		$removed = $wp_filesystem->delete($tempdir, true); 
-		if( !$removed ) $this->skin->feedback("Could not remove the temporary theme directory.");
-		
-		//Bombard the calling function will all the info which we've just used.
 		return $this->result;
 	}
 	
