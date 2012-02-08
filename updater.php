@@ -5,7 +5,7 @@ Plugin URI: https://github.com/UCF/Theme-Updater
 Description: A theme updater for GitHub hosted Wordpress themes.  This Wordpress plugin automatically checks GitHub for theme updates and enables automatic install.  For more information read <a href="https://github.com/UCF/Theme-Updater/blob/master/readme.markdown">plugin documentation</a>.
 Author: Douglas Beck
 Author: UCF Web Communications
-Version: 1.3.3
+Version: 1.3.4
 */
 
 require_once('assets.php');
@@ -127,4 +127,15 @@ function upgrader_source_selection_filter($source, $remote_source=NULL, $upgrade
 		}
 	}
 	return $source;
+}
+
+/*
+   Function to address the issue that users in a standalone WordPress installation
+   were receiving SSL errors and were unable to install themes.
+   https://github.com/UCF/Theme-Updater/issues/3
+*/
+add_action('http_request_args', 'no_ssl_http_request_args', 10, 2);
+function no_ssl_http_request_args($args, $url) {
+$args['sslverify'] = false;
+return $args;
 }

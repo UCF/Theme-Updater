@@ -67,4 +67,7 @@ Pull the tags trough the [Repository Refs API](http://develop.github.com/p/repo.
 
 Publish the update details to the `response` array in the `update_themes` transient, similar to how [Wordpress updates themes](http://core.trac.wordpress.org/browser/trunk/wp-includes/update.php?rev=17978#L188).
 
+## Changelog
 
+### v1.3.4 - February 8, 2012
+* Fix to [SSL issue](https://github.com/UCF/Theme-Updater/issues/3). Code by Github user bainternet. Added by Github user danyork.
