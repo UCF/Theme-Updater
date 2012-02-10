@@ -104,8 +104,6 @@ Code is a mashup of Wordpress source.  I'm looking at:
 * [`get_themes()`](http://core.trac.wordpress.org/browser/trunk/wp-includes/theme.php?rev=17978#L249)  
 * [`get_theme_data()`](http://core.trac.wordpress.org/browser/trunk/wp-includes/theme.php?rev=17978#L163)
 
-Unfortunately `Theme URI` is not available via default [`get_theme_data()`](http://codex.wordpress.org/Function_Reference/get_theme_data), which is probably for the best because I don't want to conflict with standard [wordpress conventions](http://codex.wordpress.org/Theme_Development#Theme_Stylesheet). 
-
 
 ### 2 - Get the github tags
 
