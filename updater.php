@@ -5,10 +5,17 @@ Plugin URI: https://github.com/UCF/Theme-Updater
 Description: A theme updater for GitHub hosted Wordpress themes.  This Wordpress plugin automatically checks GitHub for theme updates and enables automatic install.  For more information read <a href="https://github.com/UCF/Theme-Updater/blob/master/readme.markdown">plugin documentation</a>.
 Author: Douglas Beck
 Author: UCF Web Communications
-Version: 1.3.3
+Version: 1.3.4
 */
 
 require_once('assets.php');
+
+// register the custom stylesheet header
+add_action( 'extra_theme_headers', 'github_extra_theme_headers' );
+function github_extra_theme_headers( $headers ) {
+    $headers['Github Theme URI'] = 'Github Theme URI';
+    return $headers;
+}
 
 add_filter('site_transient_update_themes', 'transient_update_themes_filter');
 function transient_update_themes_filter($data){
@@ -16,18 +23,17 @@ function transient_update_themes_filter($data){
 	$installed_themes = get_themes( );
 	foreach ( (array) $installed_themes as $theme_title => $theme ) {
 		
-		// Get Theme's URI
+		// get the Github URI header, skip if not set
 		if(isset($theme['Stylesheet Files'][0]) && is_readable($theme['Stylesheet Files'][0])){
-			$theme_file = $theme['Stylesheet Dir'] . '/style.css';
-			$default_headers = array('UpdateURI' => 'Github Theme URI');
-			$theme_data = get_file_data( $theme_file, $default_headers, 'theme' );
-			if(empty($theme_data['UpdateURI'])){
+			$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
+			$theme_data = get_theme_data($stylesheet);
+			if(empty($theme_data['Github Theme URI'])){
 				continue;
 			}
-			$theme['UpdateURI'] = $theme_data['UpdateURI'];
-			$theme_key = $theme['Stylesheet'];
 		}
-		
+
+		$theme['Github Theme URI'] = $theme_data['Github Theme URI'];
+		$theme_key = $theme['Stylesheet'];
 		
 		// Add Github Theme Updater to return $data and hook into admin
 		remove_action( "after_theme_row_" . $theme['Stylesheet'], 'wp_theme_update_row');
@@ -36,7 +42,7 @@ function transient_update_themes_filter($data){
 		// Grab Github Tags
 		preg_match(
 			'/http(s)?:\/\/github.com\/(?<username>[\w-]+)\/(?<repo>[\w-]+)$/',
-			$theme['UpdateURI'],
+			$theme['Github Theme URI'],
 			$matches);
 		if(!isset($matches['username']) or !isset($matches['repo'])){
 			$data->response[$theme_key]['error'] = 'Incorrect github project url.  Format should be (no trailing slash): <code style="background:#FFFBE4;">https://github.com/&lt;username&gt;/&lt;repo&gt;</code>';
@@ -83,7 +89,8 @@ function transient_update_themes_filter($data){
 		
 		// check for rollback
 		if(isset($_GET['rollback'])){
-			$data->response[$theme_key]['package'] = $theme['UpdateURI'] . '/zipball/' . urlencode($_GET['rollback']);
+			$data->response[$theme_key]['package'] = 
+				$theme['Github Theme URI'] . '/zipball/' . urlencode($_GET['rollback']);
 			continue;
 		}
 		
@@ -98,10 +105,10 @@ function transient_update_themes_filter($data){
 		
 		
 		// new update available, add to $data
-		$download_link = $theme['UpdateURI'] . '/zipball/' . $newest_tag;
+		$download_link = $theme['Github Theme URI'] . '/zipball/' . $newest_tag;
 		$update = array();
 		$update['new_version'] = $newest_tag;
-		$update['url']         = $theme['UpdateURI'];
+		$update['url']         = $theme['Github Theme URI'];
 		$update['package']     = $download_link;
 		$data->response[$theme_key] = $update;
 		
@@ -127,4 +134,15 @@ function upgrader_source_selection_filter($source, $remote_source=NULL, $upgrade
 		}
 	}
 	return $source;
+}
+
+/*
+   Function to address the issue that users in a standalone WordPress installation
+   were receiving SSL errors and were unable to install themes.
+   https://github.com/UCF/Theme-Updater/issues/3
+*/
+add_action('http_request_args', 'no_ssl_http_request_args', 10, 2);
+function no_ssl_http_request_args($args, $url) {
+	$args['sslverify'] = false;
+	return $args;
 }
