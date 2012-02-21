@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-=== Theme Updater ===
-Contributors: blurback
-Tags: github, theme, upgrader, updater
-Requires at least: 3.1.2
-Tested up to: 3.1.3
-Stable tag: 1.3.3
-=======
 # Wordpress plugin: a theme updater for GitHub-hosted Wordpress themes
 
 Do you wish that you could somehow get update notifications within WordPress for _custom_ themes that you use for your site? Perhaps a custom theme that you had developed specifically for your site? Or a theme you developed for a client site?  And do you wish you could do "automatic updates" to those custom themes just like you can for _public_ themes available from WordPress.org?
@@ -17,40 +9,28 @@ This plugin works with WordPress in both a standalone and MultiSite mode and has
 * http://wordpress.org/extend/plugins/theme-updater/
 
 Bugs, feature requests or other suggestions should be filed as [issues at the plugin's Github repository](https://github.com/UCF/Theme-Updater/issues)
->>>>>>> master
 
-A theme updater for GitHub hosted WordPress themes
+## Screenshots
 
-== Description ==
+![Screenshot One](https://github.com/UCF/Theme-Updater/raw/master/screenshot-1.png)  
 
-A theme updater for GitHub hosted WordPress themes.  This plugin automatically checks GitHub for new project tags and enables automatic install.
+---
 
-== Installation ==
+![Screenshot Two](https://github.com/UCF/Theme-Updater/raw/master/screenshot-2.png)  
 
-#### For the Impatient
+---
 
-1. Install and activate the plugin.
-1. [Here](https://github.com/UCF/Theme-Updater-Demo) is a sample theme.  [Download (.zip)](https://github.com/UCF/Theme-Updater-Demo/zipball/v1.1.0)
+![Screenshot Three](https://github.com/UCF/Theme-Updater/raw/master/screenshot-3.png)  
 
-<<<<<<< HEAD
-#### Theme Prep
-
-##### 1- Publish Theme to a public GitHub Repository  
-=======
 ---
 
 ## Installation
->>>>>>> master
 
-Note: lacks support for private repositories.
+[Here](https://github.com/UCF/Theme-Updater-Demo) is a sample theme.  [Download (.zip)](https://github.com/UCF/Theme-Updater-Demo/zipball/v1.1.0)
 
-<<<<<<< HEAD
-##### 2- Update Your Theme's `style.css`
-=======
 ### 1 - Publish your theme to a public GitHub Repository
 
 ### 2 - Update Your theme's `style.css`
->>>>>>> master
 
 Add `Github Theme URI` to your `style.css` header, this will be where the plugin looks for updates.  I also recommend using [semantic versioning](http://semver.org/) for the version number. (Note that the version number does _not_ need to start with "v" as shown in the examples below. You can simply use a number such as "1.2.0". You just need to be consistent with how you create version numbers.)
 
@@ -65,39 +45,11 @@ Example header:
 
 Push these changes back to the project.
 
-<<<<<<< HEAD
-#####  3- Create a new tag
-=======
 ### 3 - Create a new tag and push the change back to the repo
->>>>>>> master
 
     $ git tag v1.0.0
     $ git push origin v1.0.0
 
-<<<<<<< HEAD
-Note: your tag numbers and theme version numbers should be in accord.
-
-##### 4- Download and install the plugin
-
-The next time you push a new tag, it will be recognized by the plugin and you will be notified in the wp-admin.
-
-
-== Screenshots ==
-
-1. A new update is available.
-2. Clicked "Update automatically".
-3. Everything is up-to-date.
-
-== Changelog ==
-
-= v1.3.2 =
-* Stable, import from git project
-
-== Upgrade Notice ==
-
-= v1.3.2 =
-Because git > svn
-=======
 Note, your tag numbers and theme version numbers should match.  If you want to increment the version number, be sure to update and commit your `style.css` prior to creating the new git tag.
 
 ### 4 - Upload your modified theme to your WordPress site
@@ -140,13 +92,12 @@ Note, you should use the **identical** number for the tag that you did for a ver
 That's it. Now any sites with your theme installed will receive an update notification the next time their WordPress installation checks for updates.
 
 ---
->>>>>>> master
 
-== Code Comments ==
+## Code Comments
 
 The flow of the plugin is:
 
-##### Get the Theme's Update URI
+### 1 - Get the Theme's Update URI
 
 Code is a mashup of Wordpress source.  I'm looking at:
 
@@ -154,11 +105,11 @@ Code is a mashup of Wordpress source.  I'm looking at:
 * [`get_theme_data()`](http://core.trac.wordpress.org/browser/trunk/wp-includes/theme.php?rev=17978#L163)
 
 
-##### Get the github tags
+### 2 - Get the github tags
 
 Pull the tags trough the [Repository Refs API](http://develop.github.com/p/repo.html).
 
-##### Notify Worpress of the Update
+### 3 - Notify Worpress of the Update
 
 Publish the update details to the `response` array in the `update_themes` transient, similar to how [Wordpress updates themes](http://core.trac.wordpress.org/browser/trunk/wp-includes/update.php?rev=17978#L188).
 
