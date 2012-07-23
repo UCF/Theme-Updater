@@ -117,6 +117,10 @@ Publish the update details to the `response` array in the `update_themes` transi
 
 ## Changelog
 
+*** v1.3.7 - July 23, 2012
+* URLencode repo and user names
+* Handle Github API errors appropriately
+
 *** v1.3.6 - July 23, 2012
 * Fixed [Incorrect Github Project URL Error](https://github.com/UCF/Theme-Updater/issues/22)
 
