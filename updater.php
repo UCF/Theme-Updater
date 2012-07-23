@@ -48,9 +48,7 @@ function transient_update_themes_filter($data){
 			$data->response[$theme_key]['error'] = 'Incorrect github project url.  Format should be (no trailing slash): <code style="background:#FFFBE4;">https://github.com/&lt;username&gt;/&lt;repo&gt;</code>';
 			continue;
 		}
-		$url = 'https://github.com/api/v2/json/repos/show/' . 
-				$matches['username'] . '/' . $matches['repo'] .
-				'/tags';
+		$url = sprintf('https://api.github.com/repos/%s/%s/tags', $matches['username'], $matches['repo']);
 		
 		$response = get_transient(md5($url)); // Note: WP transients fail if key is long than 45 characters
 		if(empty($response)){
@@ -73,7 +71,7 @@ function transient_update_themes_filter($data){
 				continue;
 			}
 			
-			if(!isset($response->tags) or count(get_object_vars($response->tags)) < 1){
+			if(count($response) == 0){
 				$data->response[$theme_key]['error'] = "Github theme does not have any tags";
 				continue;
 			}
@@ -83,7 +81,7 @@ function transient_update_themes_filter($data){
 		}
 		
 		// Sort and get latest tag
-		$tags = array_keys(get_object_vars($response->tags));
+		$tags = array_map(create_function('$t', 'return $t->name;'), $response);
 		usort($tags, "version_compare");
 		
 		
