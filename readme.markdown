@@ -66,7 +66,7 @@ Your theme will now be installed inside of WordPress and can be activated for yo
 
 Inside your WordPress admin menu (standalone) or network admin menu (MultiSite) choose "Add New" under the Plugins menu.  Search for "Theme Updater" and this will bring you to [the plugin's WordPress page](http://wordpress.org/extend/plugins/theme-updater/) where you can install the plugin directly into your WordPress installation. (Alternatively you can visit that page, download the plugin as a zip file and upload it to your WordPress install, but why go through all that work?)
 
-With the plugin installed and activated on your site and the theme uploaded, the next time you push a new tag to your Github repository, it will be recognized by the plugin and an update notice will appear in your admin menu.
+With the plugin installed and activated (it must be network activated on multsite installs) on your site and the theme uploaded, the next time you push a new tag to your Github repository, it will be recognized by the plugin and an update notice will appear in your admin menu.
 
 This is no configuration or settings panel for this plugin.
 
