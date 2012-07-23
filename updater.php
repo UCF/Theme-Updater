@@ -66,7 +66,7 @@ function transient_update_themes_filter($data){
 			$data->response[$theme_key]['error'] = 'Incorrect github project url.  Format should be (no trailing slash): <code style="background:#FFFBE4;">https://github.com/&lt;username&gt;/&lt;repo&gt;</code>';
 			continue;
 		}
-		$url = sprintf('https://api.github.com/repos/%s/%s/tags', $matches['username'], $matches['repo']);
+		$url = sprintf('https://api.github.com/repos/%s/%s/tags', urlencode($matches['username']), urlencode($matches['repo']));
 		
 		$response = get_transient(md5($url)); // Note: WP transients fail if key is long than 45 characters
 		if(empty($response)){
@@ -76,14 +76,15 @@ function transient_update_themes_filter($data){
 				continue;
 			}
 			$response = json_decode($raw_response['body']);
-			if(isset($response->error)){
-				if(is_array($response->error)){
+
+			if(isset($response->message)){
+				if(is_array($response->message)){
 					$errors = '';
-					foreach ( $response->error as $error) {
+					foreach ( $response->message as $error) {
 						$errors .= ' ' . $error;
 					}
 				} else {
-					$errors = print_r($response->error, true);
+					$errors = print_r($response->message, true);
 				}
 				$data->response[$theme_key]['error'] = sprintf('While <a href="%s">fetching tags</a> api error</a>: <span class="error">%s</span>', $url, $errors);
 				continue;
