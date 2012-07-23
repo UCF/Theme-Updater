@@ -117,6 +117,9 @@ Publish the update details to the `response` array in the `update_themes` transi
 
 ## Changelog
 
+*** v1.3.6 - July 23, 2012
+* Fixed [Incorrect Github Project URL Error](https://github.com/UCF/Theme-Updater/issues/22)
+
 ### v1.3.5 - July 23, 2012
 * [Compabitilty with new Github API](https://github.com/UCF/Theme-Updater/issues/18)
 * Updated README to address the following issues: [Installation for MultiSite should mention "Network Activate"](https://github.com/UCF/Theme-Updater/issues/13) and [Docs should mention that there is no configuration or settings panel](https://github.com/UCF/Theme-Updater/issues/15)
