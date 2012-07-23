@@ -19,20 +19,38 @@ function github_extra_theme_headers( $headers ) {
 
 add_filter('site_transient_update_themes', 'transient_update_themes_filter');
 function transient_update_themes_filter($data){
-	
-	$installed_themes = get_themes( );
-	foreach ( (array) $installed_themes as $theme_title => $theme ) {
-		
-		// get the Github URI header, skip if not set
-		if(isset($theme['Stylesheet Files'][0]) && is_readable($theme['Stylesheet Files'][0])){
-			$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
-			$theme_data = get_theme_data($stylesheet);
-			if(empty($theme_data['Github Theme URI'])){
-				continue;
-			}
-		}
+	global $wp_version;
 
-		$theme['Github Theme URI'] = $theme_data['Github Theme URI'];
+	$installed_themes = get_themes( );
+	foreach ( (array) $installed_themes as $theme_title => $_theme ) {
+		// the WP_Theme object is very different now...
+		// This whole function should be refactored to not directly
+		// rely on the $theme variable the way it does
+		if(version_compare($wp_version, '3.4', '>=')) {
+			if(!$_theme->get('Github Theme URI')) {
+				continue;
+			} else {
+				$theme = array(
+					'Github Theme URI' => $_theme->get('Github Theme URI'),
+					'Stylesheet'       => $_theme->stylesheet,
+					'Version'          => $_theme->version
+				);
+			}
+		} else {
+			// get the Github URI header, skip if not set
+			$theme = $_theme;
+			if(isset($theme['Stylesheet Files'][0]) && is_readable($theme['Stylesheet Files'][0])){
+				$stylesheet = $theme['Stylesheet Dir'] . '/style.css';
+				
+				$theme_data = get_theme_data($stylesheet);
+				if(empty($theme_data['Github Theme URI'])){
+					continue;
+				} else {
+					$theme['Github Theme URI'] = $theme_data['Github Theme URI'];
+				}
+			};
+		}
+		
 		$theme_key = $theme['Stylesheet'];
 		
 		// Add Github Theme Updater to return $data and hook into admin
