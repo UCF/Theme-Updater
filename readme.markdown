@@ -68,6 +68,8 @@ Inside your WordPress admin menu (standalone) or network admin menu (MultiSite) 
 
 With the plugin installed and activated on your site and the theme uploaded, the next time you push a new tag to your Github repository, it will be recognized by the plugin and an update notice will appear in your admin menu.
 
+This is no configuration or settings panel for this plugin.
+
 ---
 
 ## Updating The Theme
