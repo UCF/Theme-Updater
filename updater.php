@@ -21,12 +21,14 @@ add_filter('site_transient_update_themes', 'transient_update_themes_filter');
 function transient_update_themes_filter($data){
 	global $wp_version;
 
-	$installed_themes = get_themes( );
+	$wp_34 = version_compare($wp_version, '3.4', '>=');
+
+	$installed_themes = $wp_34 ? wp_get_themes() : get_themes();
 	foreach ( (array) $installed_themes as $theme_title => $_theme ) {
 		// the WP_Theme object is very different now...
 		// This whole function should be refactored to not directly
 		// rely on the $theme variable the way it does
-		if(version_compare($wp_version, '3.4', '>=')) {
+		if($wp_34) {
 			if(!$_theme->get('Github Theme URI')) {
 				continue;
 			} else {
