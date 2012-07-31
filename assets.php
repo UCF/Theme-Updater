@@ -13,16 +13,12 @@ function github_theme_update_row( $theme_key, $theme ) {
 		!isset( $current->up_to_date[ $theme_key ] )	
 	)
 		return false;
-		
-	$r = $current->response[ $theme_key ];
+
 	$wp_list_table = _get_list_table('WP_MS_Themes_List_Table');
 	
 	
 	// custom additions
-	if( isset($r['error']) ){
-		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-error">';
-		printf('Error with Github Theme Updater. %1$s', $r['error']);
-	} else if(isset($current->up_to_date[$theme_key])){
+	if(isset($current->up_to_date[$theme_key])){
 		$rollback = $current->up_to_date[$theme_key]['rollback'];
 		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-ok">';
 		echo 'Theme is up-to-date! ';
@@ -44,23 +40,29 @@ function github_theme_update_row( $theme_key, $theme ) {
 			}
 		}
 	} else {
-		$themes_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
-		$theme_name = wp_kses( $theme['Name'], $themes_allowedtags );
-		$github_url = esc_url($r['url']);
-		$diff_url   = esc_url($r['url'] . '/compare/' . $theme['Version'] . '...' . $r['new_version']);
-		
-		echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu">';
-		printf('Github has as a new version of <a href="%s" target="blank">%s</a>. ', $github_url, $theme_name);
-		printf('View <a href="%s" target="blank">version diff</a> with %s. ', $diff_url, $r['new_version']);
-		if (current_user_can('update_themes')){
-			if(empty($r['package'])){
-				echo '<em>Automatic update is unavailable for this plugin.</em>';
-			} else {
-				printf('<a href="%s">Update automatically</a>.', wp_nonce_url( self_admin_url('update.php?action=upgrade-github-theme&theme=') . $theme_key, 'upgrade-theme_' . $theme_key));
+		$r = $current->response[ $theme_key ];
+		if( isset($r['error']) ){
+			echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu update-error">';
+			printf('Error with Github Theme Updater. %1$s', $r['error']);
+		} else {
+			$themes_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
+			$theme_name = wp_kses( $theme['Name'], $themes_allowedtags );
+			$github_url = esc_url($r['url']);
+			$diff_url   = esc_url($r['url'] . '/compare/' . $theme['Version'] . '...' . $r['new_version']);
+			
+			echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="update-message-gtu">';
+			printf('Github has as a new version of <a href="%s" target="blank">%s</a>. ', $github_url, $theme_name);
+			printf('View <a href="%s" target="blank">version diff</a> with %s. ', $diff_url, $r['new_version']);
+			if (current_user_can('update_themes')){
+				if(empty($r['package'])){
+					echo '<em>Automatic update is unavailable for this plugin.</em>';
+				} else {
+					printf('<a href="%s">Update automatically</a>.', wp_nonce_url( self_admin_url('update.php?action=upgrade-github-theme&theme=') . $theme_key, 'upgrade-theme_' . $theme_key));
+				}
 			}
 		}
+		do_action( "in_theme_update_message-$theme_key", $theme, $r );
 	}
-	do_action( "in_theme_update_message-$theme_key", $theme, $r );
 	echo '</div></td></tr>';
 }
 
