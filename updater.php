@@ -8,8 +8,6 @@ Author: UCF Web Communications
 Version: 1.3.7
 */
 
-require_once('assets.php');
-
 // register the custom stylesheet header
 add_action( 'extra_theme_headers', 'github_extra_theme_headers' );
 function github_extra_theme_headers( $headers ) {
@@ -17,12 +15,19 @@ function github_extra_theme_headers( $headers ) {
     return $headers;
 }
 
-add_filter('site_transient_update_themes', 'transient_update_themes_filter');
+//disable updater during core wordpress updates
+if(!empty($_GET['action']) && $_GET['action'] == 'do-core-reinstall'); 
+else {
+	add_filter('site_transient_update_themes', 'transient_update_themes_filter');
+	require_once('assets.php');
+}
+
 function transient_update_themes_filter($data){
 	global $wp_version;
 
-	$installed_themes = get_themes( );
+	$installed_themes = wp_get_themes( );
 	foreach ( (array) $installed_themes as $theme_title => $_theme ) {
+		
 		// the WP_Theme object is very different now...
 		// This whole function should be refactored to not directly
 		// rely on the $theme variable the way it does
@@ -141,15 +146,27 @@ function upgrader_source_selection_filter($source, $remote_source=NULL, $upgrade
 		Github delivers zip files as <Username>-<TagName>-<Hash>.zip
 		must rename this zip file to the accurate theme folder
 	*/
-	if(isset($source, $remote_source, $upgrader->skin->theme)){
-		$corrected_source = $remote_source . '/' . $upgrader->skin->theme . '/';
+	$upgrader->skin->feedback("Executing upgrader_source_selection_filter function...");
+	if(isset($upgrader->skin->theme)) 
+		$correct_theme_name = $upgrader->skin->theme;
+	elseif(isset($upgrader->skin->theme_info->template))
+		$correct_theme_name = $upgrader->skin->theme_info->template;
+	else 
+		$upgrader->skin->feedback('Theme name not found. Unable to rename downloaded theme.');
+			
+	if(isset($source, $remote_source, $correct_theme_name)){				
+		$corrected_source = $remote_source . '/' . $correct_theme_name . '/';
 		if(@rename($source, $corrected_source)){
+			$upgrader->skin->feedback("Renamed theme folder successfully.");
 			return $corrected_source;
 		} else {
-			$upgrader->skin->feedback("Unable to rename downloaded theme.");
+			$upgrader->skin->feedback("**Unable to rename downloaded theme.");
 			return new WP_Error();
 		}
 	}
+	else
+		$upgrader->skin->feedback('**Source or Remote Source is unavailable.');
+		
 	return $source;
 }
 
