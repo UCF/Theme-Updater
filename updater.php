@@ -149,6 +149,8 @@ function upgrader_source_selection_filter($source, $remote_source=NULL, $upgrade
 	$upgrader->skin->feedback("Executing upgrader_source_selection_filter function...");
 	if(isset($upgrader->skin->theme)) 
 		$correct_theme_name = $upgrader->skin->theme;
+	elseif(isset($upgrader->skin->theme_info->stylesheet))
+		$correct_theme_name = $upgrader->skin->theme_info->stylesheet;
 	elseif(isset($upgrader->skin->theme_info->template))
 		$correct_theme_name = $upgrader->skin->theme_info->template;
 	else 
