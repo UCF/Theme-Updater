@@ -25,7 +25,8 @@ else {
 function transient_update_themes_filter($data){
 	global $wp_version;
 
-	$installed_themes = wp_get_themes( );
+	if(function_exists('wp_get_themes')) $installed_themes = wp_get_themes( );
+	else $installed_themes = get_themes( );
 	foreach ( (array) $installed_themes as $theme_title => $_theme ) {
 		
 		// the WP_Theme object is very different now...
