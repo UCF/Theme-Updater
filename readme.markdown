@@ -1,3 +1,7 @@
+# No Longer Supported
+
+Since we are no longer supporting this plugin please feel free to look at one of the many forks for possible updates and fixes. If you are couragous enough you can fork this project and upgrade it as needed. Thanks
+
 # Wordpress plugin: a theme updater for GitHub-hosted Wordpress themes
 
 Do you wish that you could somehow get update notifications within WordPress for _custom_ themes that you use for your site? Perhaps a custom theme that you had developed specifically for your site? Or a theme you developed for a client site?  And do you wish you could do "automatic updates" to those custom themes just like you can for _public_ themes available from WordPress.org?
@@ -12,15 +16,15 @@ Bugs, feature requests or other suggestions should be filed as [issues at the pl
 
 ## Screenshots
 
-![Screenshot One](https://github.com/UCF/Theme-Updater/raw/master/screenshot-1.png)  
+![Screenshot One](https://github.com/UCF/Theme-Updater/raw/master/screenshot-1.png)
 
 ---
 
-![Screenshot Two](https://github.com/UCF/Theme-Updater/raw/master/screenshot-2.png)  
+![Screenshot Two](https://github.com/UCF/Theme-Updater/raw/master/screenshot-2.png)
 
 ---
 
-![Screenshot Three](https://github.com/UCF/Theme-Updater/raw/master/screenshot-3.png)  
+![Screenshot Three](https://github.com/UCF/Theme-Updater/raw/master/screenshot-3.png)
 
 ---
 
@@ -36,8 +40,8 @@ Add `Github Theme URI` to your `style.css` header, this will be where the plugin
 
 Example header:
 
-    Theme Name: Example  
-    Theme URI: http://example.com/  
+    Theme Name: Example
+    Theme URI: http://example.com/
     Github Theme URI: https://github.com/username/repo
     Description: My Example Theme
     Author: person
@@ -54,7 +58,7 @@ Note, your tag numbers and theme version numbers should match.  If you want to i
 
 ### 4 - Upload your modified theme to your WordPress site
 
-Before the plugin can work, your theme with the `Github Theme URI` addition needs to be uploaded to our WordPress site. 
+Before the plugin can work, your theme with the `Github Theme URI` addition needs to be uploaded to our WordPress site.
 
 * Create a ZIP file of your theme on your local computer.
 * Inside your WordPress admin menu (standalone) or network admin menu (MultiSite) go to the Install Themes panel and click on "Upload".
@@ -89,7 +93,7 @@ The process of updating your theme and generating auto-update notifications is n
     $ git tag v1.1.0
     $ git push origin v1.1.0
 
-Note, you should use the **identical** number for the tag that you did for a version number in `style.css` in step #2. 
+Note, you should use the **identical** number for the tag that you did for a version number in `style.css` in step #2.
 
 That's it. Now any sites with your theme installed will receive an update notification the next time their WordPress installation checks for updates.
 
@@ -103,7 +107,7 @@ The flow of the plugin is:
 
 Code is a mashup of Wordpress source.  I'm looking at:
 
-* [`get_themes()`](http://core.trac.wordpress.org/browser/trunk/wp-includes/theme.php?rev=17978#L249)  
+* [`get_themes()`](http://core.trac.wordpress.org/browser/trunk/wp-includes/theme.php?rev=17978#L249)
 * [`get_theme_data()`](http://core.trac.wordpress.org/browser/trunk/wp-includes/theme.php?rev=17978#L163)
 
 
