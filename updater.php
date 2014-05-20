@@ -109,7 +109,7 @@ function transient_update_themes_filter($data){
 		// check for rollback
 		if(isset($_GET['rollback'])){
 			$data->response[$theme_key]['package'] = 
-				$theme['Github Theme URI'] . '/zipball/' . urlencode($_GET['rollback']);
+				$theme['Github Theme URI'] . '/archive/' . urlencode($_GET['rollback']) . '.zip';
 			continue;
 		}
 		
@@ -124,7 +124,7 @@ function transient_update_themes_filter($data){
 		
 		
 		// new update available, add to $data
-		$download_link = $theme['Github Theme URI'] . '/zipball/' . $newest_tag;
+		$download_link = $theme['Github Theme URI'] . '/archive/' . $newest_tag . '.zip';
 		$update = array();
 		$update['new_version'] = $newest_tag;
 		$update['url']         = $theme['Github Theme URI'];
