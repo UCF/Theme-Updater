@@ -1,6 +1,6 @@
 # No Longer Supported
 
-Since we are no longer supporting this plugin please feel free to look at one of the many forks for possible updates and fixes. If you are couragous enough you can fork this project and upgrade it as needed. Thanks
+We are no longer supporting this plugin. We recommend [github-update](https://github.com/afragen/github-updater) instead. It will update plugins as well as themes, and has many other useful features, including support for both public and private Github/BitBucket repositories. 
 
 # Wordpress plugin: a theme updater for GitHub-hosted Wordpress themes
 
